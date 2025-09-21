@@ -1,0 +1,153 @@
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.7", import: ["@key", "@shareable", "@extends"])
+
+directive @shareable on FIELD_DEFINITION | OBJECT
+
+scalar DateTime
+scalar Date
+scalar Integer
+scalar JSONObject
+scalar Any
+scalar UUID
+scalar ObjectID
+
+type Rs @key(fields: "id") {
+    id: ID!
+    name: String!
+    description: String
+    createdAt: DateTime!
+    updatedAt: DateTime!
+}
+
+input RsCreateInput{
+    name: String!
+    description: String
+}
+
+input RsUpdateInput{
+    name: String
+    description: String
+}
+
+type Mutation {
+    createRs(dataInput: RsCreateInput!): ID!
+    updateRs(id: ID!, dataInput: RsUpdateInput!): ID!
+    deleteRs(id: ID!): Boolean!
+}
+
+type RsEdge {
+  node: Rs!
+  cursor: String!
+}
+
+type RsConnection {
+  edges: [RsEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+  extend type Query {
+    rs(id: ID!): Rs
+
+    rss(
+      # Cursor-based and Offset-based pagination
+      paginationParams: PaginationInput
+      # Sorting and filtering
+      sort: SortInput
+      filter: RsFilterInput
+    ): RsConnection!
+
+
+    rssPaginated(
+      limit: Int
+      offset: Int
+      sort: SortInput
+      filter:RsFilterInput
+    ): RsPaginatedResult!
+
+  }
+
+  type RsPaginatedResult {
+    items: [Rs!]!
+    totalCount: Int!
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    currentPage: Int!
+    totalPages: Int!
+  }
+
+  input RsFilterInput {
+    # Add your specific filter fields here
+    search: String
+    createdAt: String
+    updatedAt: String
+  }
+
+  #----- Pagination ------
+  type PageInfo @shareable {
+      hasNextPage: Boolean!
+      hasPreviousPage: Boolean!
+      startCursor: String
+      endCursor: String
+  }
+
+  # Offset-based pagination input
+  input OffsetPaginationInput {
+      limit: Int
+      offset: Int
+  }
+
+  # Cursor-based pagination input
+  input CursorPaginationInput {
+      first: Int
+      after: String
+      last: Int
+      before: String
+  }
+
+  # Combined pagination input
+  input PaginationInput {
+      # Cursor-based
+      first: Int
+      after: String
+      last: Int
+      before: String
+
+      # Offset-based
+      limit: Int
+      offset: Int
+  }
+
+  # Sort input
+  input SortInput {
+      field: String!
+      direction: SortDirection!
+  }
+
+  enum SortDirection {
+      ASC
+      DESC
+  }
+
+
+  # -------------- Metrics ----------------
+  enum MetricType {
+    COUNTER
+    GAUGE
+    HISTOGRAM
+    SUMMARY
+  }
+
+  input LabelInput {
+    name: String!
+    value: String!
+  }
+
+  input MetricObservationInput {
+    name: String!
+    type: MetricType!
+    value: Float!
+    labels: [LabelInput!]
+    timestamp: String # optional, in RFC3339 or epoch format
+  }
+

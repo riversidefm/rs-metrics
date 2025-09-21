@@ -1,0 +1,47 @@
+{
+  "recommendations": [
+    "// === Essential Extensions ===",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "ms-vscode.vscode-typescript-next",
+    
+    "// === NestJS & Node.js ===",
+    "ms-vscode.vscode-json",
+    "bradlc.vscode-tailwindcss",
+    
+    "// === Database & ORM ===",
+    "Prisma.prisma",
+    "ms-ossdata.vscode-postgresql",
+    
+    "// === GraphQL ===",
+    "GraphQL.vscode-graphql",
+    "GraphQL.vscode-graphql-syntax",
+    
+    "// === Testing ===",
+    "Orta.vscode-jest",
+    "ms-vscode.test-adapter-converter",
+    
+    "// === Docker ===",
+    "ms-azuretools.vscode-docker",
+    
+    "// === Git & Version Control ===",
+    "eamodio.gitlens",
+    "github.vscode-pull-request-github",
+    
+    "// === Productivity ===",
+    "ms-vscode.vscode-thunder-client",
+    "humao.rest-client",
+    "streetsidesoftware.code-spell-checker",
+    "christian-kohler.path-intellisense",
+    "bradlc.vscode-tailwindcss",
+    
+    "// === Environment ===",
+    "mikestead.dotenv",
+    
+    "// === Markdown ===",
+    "yzhang.markdown-all-in-one"
+  ],
+  "unwantedRecommendations": [
+    "ms-vscode.vscode-typescript"
+  ]
+}

@@ -1,0 +1,77 @@
+# rs-metrics-service Docker Ignore
+
+# Node.js
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist
+build
+coverage
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.exampl
+
+# Development files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.pid.lock
+
+# Testing
+test-results
+coverage
+
+# Git
+.git
+.gitignore
+
+# DAPR
+.dapr
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Documentation
+README*.md
+CHANGELOG.md
+QUICKSTART.md
+docs/
+
+# Scripts (development only)
+scripts/setup.sh
+scripts/dev-helper.js
+
+# Temporary files
+.tmp
+.temp
+tmp/
+temp/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

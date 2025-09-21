@@ -1,0 +1,132 @@
+name: rs-metrics-service
+
+services:
+  postgres:
+    image: postgres:17.5
+    container_name: rs-metrics-service-postgres
+    environment:
+      POSTGRES_USER: "rs-metrics"
+      POSTGRES_PASSWORD: "rs-metrics_password"
+      POSTGRES_DB: "rs-metrics_db"
+      PGDATA: /data/postgres
+    volumes:
+      - postgres_data:/data/postgres
+    ports:
+      - '${POSTGRES_PORT:-5434}:5432'
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U rs-metrics']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: rs-metrics-service-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  zookeeper:
+    image: bitnami/zookeeper:3.9
+    container_name: rs-metrics-service-zookeeper
+    ports:
+      - "${ZOOKEEPER_PORT:-2181}:2181"
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+    volumes:
+      - zookeeper_data:/bitnami/zookeeper
+    networks:
+      - messaging-network
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          "echo 'srvr' | nc localhost 2181 | grep -q 'Mode: standalone'",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  kafka:
+    image: bitnami/kafka:3.7.1
+    container_name: rs-metrics-service-kafka
+    ports:
+      - "${KAFKA_PORT:-9092}:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:${KAFKA_PORT:-9092}
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    volumes:
+      - kafka_data:/bitnami/kafka
+    networks:
+      - messaging-network
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "kafka-topics.sh", "--bootstrap-server", "kafka:9092", "--list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  dapr:
+    image: "daprio/daprd:latest"
+    container_name: rs-metrics-service-dapr
+    command: >
+      ./daprd
+      --app-id rs-metrics-service
+      --app-port ${APP_PORT:-3000}
+      --dapr-http-port 3501
+      --resources-path /components
+      --log-level debug
+      --app-protocol http
+    volumes:
+      - ./.dapr/components:/components
+    networks:
+      - messaging-network
+      - app-network
+    ports:
+      - "3501:3501"
+      - "50001:50001"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    name: rs-metrics-service_postgres_data
+  redis_data:
+    name: rs-metrics-service_redis_data
+  kafka_data:
+    name: rs-metrics-service_kafka_data
+  zookeeper_data:
+    name: rs-metrics-service_zookeeper_data
+
+networks:
+  app-network:
+    name: rs-metrics-service_network
+    driver: bridge
+  messaging-network:
+    name: rs-metrics-service_messaging_network
+    driver: bridge

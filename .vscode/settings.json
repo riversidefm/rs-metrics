@@ -1,0 +1,74 @@
+{
+  "// rs-metrics-service VSCode Settings": "",
+  
+  "// === TypeScript & JavaScript ===": "",
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.suggest.autoImports": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  
+  "// === Editor Settings ===": "",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  
+  "// === Files ===": "",
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/coverage": true
+  },
+  
+  "// === Search ===": "",
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/coverage": true,
+    "**/.git": true,
+    "**/prisma/migrations": true
+  },
+  
+  "// === Extensions ===": "",
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "typescript": "typescriptreact"
+  },
+  
+  "// === Prisma ===": "",
+  "prisma.showPrismaDataPlatformNotification": false,
+  "[prisma]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "Prisma.prisma"
+  },
+  
+  "// === GraphQL ===": "",
+  "[graphql]": {
+    "editor.formatOnSave": true
+  },
+  
+  "// === Terminal ===": "",
+  "terminal.integrated.env.osx": {
+    "NODE_ENV": "development"
+  },
+  "terminal.integrated.env.linux": {
+    "NODE_ENV": "development"
+  },
+  "terminal.integrated.env.windows": {
+    "NODE_ENV": "development"
+  },
+  
+  "// === Testing ===": "",
+  "jest.autoRun": "off",
+  "jest.showCoverageOnLoad": false,
+  
+  "// === Docker ===": "",
+  "docker.attachShellCommand.linuxContainer": "/bin/sh"
+}

@@ -1,0 +1,55 @@
+name: Build and Deploy rs-metrics-service to Dev
+
+on:
+  push:
+    branches:
+      - main
+
+# Prevent concurrent builds of the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  schema-check:
+    runs-on: ubuntu-latest
+    name: Cosmo Federation Schema Check
+    env:
+      COSMO_API_KEY: ${{ secrets.COSMO_API_KEY }}
+    defaults:
+      run:
+        working-directory: RsService
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run schema check
+        run: |
+          npx -y wgc@latest subgraph publish rs --namespace development --schema ./src/schema/schema.graphql
+  call-remote-image-build:
+    uses: riversidefm/github-actions/.github/workflows/build_image_generic.yml@main
+    with:
+      ecr_repository: rs-metrics-service  # ECR repo name
+      repository: ${{ github.repository }}
+    secrets: 
+      build_args: |
+        NPM_TOKEN=${{ secrets.NPM_TOKEN }}
+
+  print-image-metadata:
+    needs: call-remote-image-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show image digest and tag
+        run: |
+          echo "Image Digest: ${{ needs.call-remote-image-build.outputs.image_digest }}"
+          echo "Image Tag: ${{ needs.call-remote-image-build.outputs.image_tag }}"
+
+  call-remote-image-deploy:
+    needs: call-remote-image-build
+    uses: riversidefm/github-actions/.github/workflows/deploy_image_generic.yml@main
+    with:
+      image_tag: ${{ needs.call-remote-image-build.outputs.image_tag }}
+      ecr_repository: rs-metrics-service  # ECR repo name
+      env_name: dev
+      values_file: rs-metrics-service
+    secrets:
+      AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
