@@ -5,6 +5,9 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "// === Quick Start Commands ===": "",
     "setup": "npm run setup:env && npm run setup:infra && npm run setup:db && npm run gql:generate:types",
